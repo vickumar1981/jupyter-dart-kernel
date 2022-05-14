@@ -5,7 +5,7 @@ A simple kernel that adds the  [Dart programming language](https://Dart.org) int
 ### Requirements
 
 - Dart
-- Python (I used 2.7 but 3 should also be fine)
+- Python 3
 - Jupyter
 
 ### Steps

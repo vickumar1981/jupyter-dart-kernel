@@ -65,15 +65,15 @@ class DartKernel(Kernel):
             unicodeCommand = (command + "\n").encode("UTF-8")
             dartFile.write(unicodeCommand)
 
-        f = open(dartFileLocation,"r")
-        lines = f.readlines()
-        f.close()
+        rf = open(dartFileLocation,"r")
+        lines_read = rf.readlines()
+        rf.close()
 
-        f = open(runFile, "w")
-        f.write("void main() {\n")
-        f.write(lines)
-        f.write("}\n")
-        f.close()
+        wf = open(runFile, "w")
+        wf.write("void main() {\n")
+        wf.writelines(lines_read)
+        wf.write("}\n")
+        wf.close()
 
         errorOutput = []
         
