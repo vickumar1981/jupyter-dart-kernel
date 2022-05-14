@@ -1,23 +1,19 @@
 # coding: utf-8
 
-# a swift kernel for Jupyter
-# copyright Tim Nugent, made available under the MIT License
-# see the repository https://github.com/McJones/jupyter-swift-kernel/ for full details
-
-import subprocess, os, shutil, tempfile, re, json
+import subprocess, os, shutil, tempfile, re
 from ipykernel.kernelbase import Kernel
 
-class SwiftKernel(Kernel):
+class DartKernel(Kernel):
     # Jupiter stuff
-    implementation = 'Swift'
-    implementation_version = '1.1.1'
-    language = 'swift'
-    language_version = '3.0.2'
-    language_info = {'mimetype': 'text/plain', 'file_extension': 'swift', 'name': 'swift'}
-    banner = "Swift kernel"
-    # my stuff
+    implementation = 'Dart'
+    implementation_version = '1.0.0'
+    language = 'dart'
+    language_version = '2.17.0'
+    language_info = {'mimetype': 'text/plain', 'file_extension': 'dart', 'name': 'dart'}
+    banner = "Dart kernel"
+    
     output = ""
-    swiftDirectory = tempfile.mkdtemp()
+    dartDirectory = tempfile.mkdtemp()
     
     def do_execute(self, code, silent, store_history=True, user_expressions=None, allow_stdin=False):
         errorCode, dump = self.runCode(code)
@@ -55,57 +51,56 @@ class SwiftKernel(Kernel):
                    }
 
     def do_shutdown(self, restart):
-        # delete the temporary swift file(s) and directory
-        shutil.rmtree(self.swiftDirectory)
+        shutil.rmtree(self.dartDirectory)
 
-    # appends the new text to the swift file
-    # runs the swift file
-    # capture all output
-    # returns the result
     def runCode(self, command):
-        swiftFileLocation = os.path.join(self.swiftDirectory, 'scratch.swift')
-        canonicalFile = os.path.join(self.swiftDirectory, 'canonical.swift')
+        dartFileLocation = os.path.join(self.dartDirectory, 'scratch.dart')
+        canonicalFile = os.path.join(self.dartDirectory, 'canonical.dart')
+        runFile = os.path.join(self.dartDirectory, 'main.dart')
         
-        # now copy everything from canonical into the scratch
         if os.path.isfile(canonicalFile):
-            shutil.copyfile(canonicalFile, swiftFileLocation)
+            shutil.copyfile(canonicalFile, dartFileLocation)
         
-        with open(swiftFileLocation, 'ab') as swiftFile:
+        with open(dartFileLocation, 'ab') as dartFile:
             unicodeCommand = (command + "\n").encode("UTF-8")
-            swiftFile.write(unicodeCommand)
-            
+            dartFile.write(unicodeCommand)
+
+        f = open(dartFileLocation,"r")
+        lines = f.readlines()
+        f.close()
+
+        f = open(runFile, "w")
+        f.write("void main() {\n")
+        f.write(lines)
+        f.write("}\n")
+        f.close()
+
         errorOutput = []
         
-        # because who needs warnings, right?!
-        # queue up mental picture of Holtzman while reading the above comment please
-        cmd = 'swift -suppress-warnings {0}'.format(swiftFileLocation)
-        swift = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmd = 'dart {0}'.format(runFile)
+        dart = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
-        # handle all valid output
-        newOutput = swift.stdout.read()
+        newOutput = dart.stdout.read()
         
-        # handle any errors
-        for line in swift.stderr.readlines():
-            # to clean up the default error message swift returns
+    
+        for line in dart.stderr.readlines():
             line = re.sub('^.*error: ', '', line.decode('utf-8'))
             errorOutput.append(line.rstrip("\n\r"))
         
-        retval = swift.wait()
+        retval = dart.wait()
         
         # ran without error
         if retval == 0:
             # putting the valid code back into the canonical file
-            shutil.copyfile(swiftFileLocation, canonicalFile)
+            shutil.copyfile(dartFileLocation, canonicalFile)
             # returning the result
             diff = newOutput[len(self.output):]
             self.output = newOutput
             return 0, diff
         else:
-            # dumping the dodgy file
-            os.remove(swiftFileLocation)
-            # returning the error(s)
+            os.remove(dartFileLocation)
             return 1, errorOutput
 
 if __name__ == '__main__':
     from ipykernel.kernelapp import IPKernelApp
-    IPKernelApp.launch_instance(kernel_class=SwiftKernel)
+    IPKernelApp.launch_instance(kernel_class=DartKernel)
