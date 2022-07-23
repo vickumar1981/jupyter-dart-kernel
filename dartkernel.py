@@ -69,9 +69,17 @@ class DartKernel(Kernel):
         lines_read = rf.readlines()
         rf.close()
 
+        (code_lines, import_lines) = (list(), list())
+        for l in lines_read:
+            if l.startswith("import"):
+                import_lines.append(l)
+            else:
+                code_lines.append(l)
+
         wf = open(runFile, "w")
+        wf.writelines(import_lines)
         wf.write("void main() {\n")
-        wf.writelines(lines_read)
+        wf.writelines(code_lines)
         wf.write("}\n")
         wf.close()
 
@@ -100,6 +108,7 @@ class DartKernel(Kernel):
         else:
             os.remove(dartFileLocation)
             return 1, errorOutput
+
 
 if __name__ == '__main__':
     from ipykernel.kernelapp import IPKernelApp
