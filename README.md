@@ -23,4 +23,14 @@ A simple kernel that adds the  [Dart programming language](https://Dart.org) int
 5. Run Jupyter and start using Dart
   - To use the kernel in the Jupyter console: `jupyter console --kernel kernelname`
   - to use the kernel in a notebook: `jupyter notebook` and create a new notebook through the browser
+  
+  
+### Getting an Error:  `No module named dartkernel`
+
+
+1. Make sure dart is installed and accessible via the path. You can check this by opening a terminal / command prompt and typing: dart --version.
+
+2. Make sure the location of where the jupyter-dart-kernel is installed is in your PYTHONPATH. This is where the python interpreter looks for modules, including the dartkernel.py file.
+
+
 

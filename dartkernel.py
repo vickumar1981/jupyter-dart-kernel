@@ -3,6 +3,7 @@
 import subprocess, os, shutil, tempfile, re
 from ipykernel.kernelbase import Kernel
 
+
 class DartKernel(Kernel):
     # Jupiter stuff
     implementation = 'Dart'
@@ -83,17 +84,15 @@ class DartKernel(Kernel):
         wf.write("}\n")
         wf.close()
 
-        errorOutput = []
+        error_output = []
         
         cmd = 'dart {0}'.format(runFile)
         dart = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
-        newOutput = dart.stdout.read()
-        
-    
+        new_output = dart.stdout.read()
+
         for line in dart.stderr.readlines():
             line = re.sub('^.*error: ', '', line.decode('utf-8'))
-            errorOutput.append(line.rstrip("\n\r"))
+            error_output.append(line.rstrip("\n\r"))
         
         retval = dart.wait()
         
@@ -102,12 +101,12 @@ class DartKernel(Kernel):
             # putting the valid code back into the canonical file
             shutil.copyfile(dartFileLocation, canonicalFile)
             # returning the result
-            diff = newOutput[len(self.output):]
-            self.output = newOutput
+            diff = new_output[len(self.output):]
+            self.output = new_output
             return 0, diff
         else:
             os.remove(dartFileLocation)
-            return 1, errorOutput
+            return 1, error_output
 
 
 if __name__ == '__main__':
