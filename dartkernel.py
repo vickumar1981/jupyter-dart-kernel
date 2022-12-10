@@ -70,18 +70,30 @@ class DartKernel(Kernel):
         lines_read = rf.readlines()
         rf.close()
 
-        (code_lines, import_lines) = (list(), list())
-        for l in lines_read:
-            if l.startswith("import"):
-                import_lines.append(l)
+        (code_lines, import_lines, class_lines) = (["void main {\n"], list(), list())
+        idx = 0
+        while idx < len(lines_read):
+            curr_line = lines_read[idx]
+            if curr_line.startswith("import "):
+                import_lines.append(curr_line)
+            elif curr_line.startswith("class "):
+                class_lines.append(curr_line)
+                end_of_class = curr_line.endswith("}")
+                while not end_of_class and idx < len(lines_read) - 1:
+                    idx += 1
+                    class_line = lines_read[idx]
+                    end_of_class = class_line.strip().endswith("}")
+                    class_lines.append(class_line)
             else:
-                code_lines.append(l)
-
+                code_lines.append(curr_line)
+            idx += 1
+        code_lines.append("}\n")
         wf = open(runFile, "w")
         wf.writelines(import_lines)
-        wf.write("void main() {\n")
+        wf.write("\n")
+        wf.writelines(class_lines)
+        wf.write("\n")
         wf.writelines(code_lines)
-        wf.write("}\n")
         wf.close()
 
         error_output = []
