@@ -9,7 +9,7 @@ class DartKernel(Kernel):
     implementation = 'Dart'
     implementation_version = '1.0.0'
     language = 'dart'
-    language_version = '2.17.0'
+    language_version = '2.18.5'
     language_info = {'mimetype': 'text/plain', 'file_extension': 'dart', 'name': 'dart'}
     banner = "Dart kernel"
     
@@ -78,7 +78,7 @@ class DartKernel(Kernel):
                 import_lines.append(curr_line)
             elif curr_line.startswith("class "):
                 class_lines.append(curr_line)
-                end_of_class = curr_line.endswith("}")
+                end_of_class = curr_line.strip().endswith("}")
                 while not end_of_class and idx < len(lines_read) - 1:
                     idx += 1
                     class_line = lines_read[idx]
