@@ -70,7 +70,7 @@ class DartKernel(Kernel):
         lines_read = rf.readlines()
         rf.close()
 
-        (code_lines, import_lines, class_lines) = (["void main {\n"], list(), list())
+        (code_lines, import_lines, class_lines) = (["void main() {\n"], list(), list())
         idx = 0
         while idx < len(lines_read):
             curr_line = lines_read[idx]
