@@ -66,7 +66,7 @@ class DartKernel(Kernel):
             unicodeCommand = (command + "\n").encode("UTF-8")
             dartFile.write(unicodeCommand)
 
-        rf = open(dartFileLocation,"r")
+        rf = open(dartFileLocation, "r")
         lines_read = rf.readlines()
         rf.close()
 
@@ -78,11 +78,14 @@ class DartKernel(Kernel):
                 import_lines.append(curr_line)
             elif curr_line.startswith("class "):
                 class_lines.append(curr_line)
-                end_of_class = curr_line.strip().endswith("}")
-                while not end_of_class and idx < len(lines_read) - 1:
+                open_brackets = 0
+                open_brackets += curr_line.count("{")
+                open_brackets -= curr_line.count("}")
+                while open_brackets > 0 and idx < len(lines_read) - 1:
                     idx += 1
                     class_line = lines_read[idx]
-                    end_of_class = class_line.strip().endswith("}")
+                    open_brackets += class_line.count("{")
+                    open_brackets -= class_line.count("}")
                     class_lines.append(class_line)
             else:
                 code_lines.append(curr_line)
