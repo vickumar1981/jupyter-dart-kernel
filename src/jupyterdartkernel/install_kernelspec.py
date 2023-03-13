@@ -1,5 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generator: Adobe Illustrator 22.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+#!/usr/bin/env python
+import os, shutil
+from jupyter_client.kernelspec import KernelSpecManager
+
+json = """{"argv":["python","-m","jupyterdartkernel", "-f", "{connection_file}"],
+	"display_name":"Dart"
+}"""
+
+svg = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <svg
    version="1.1"
@@ -88,4 +95,30 @@
    style="fill:url(#SVGID_1_)" />
 	</g>
 </g>
-</svg>
+</svg>"""
+
+def install_kernelspec():
+    kerneldir = "/tmp/jupyterdartkernel/"
+    print('Creating tmp files...', end="")
+    os.mkdir(kerneldir)
+
+    with open(kerneldir + "kernel.json", "w") as f:
+        f.write(json)
+
+    with open(kerneldir + "logo-svg.svg", "w") as f:
+        f.write(svg)
+        
+    print(' Done!')
+    print('Installing Jupyter kernel...', end="")
+    
+    ksm = KernelSpecManager()
+    ksm.install_kernel_spec(kerneldir, 'jupyterdartkernel', user=os.getenv('USER'))
+    
+    print(' Done!')
+    print('Cleaning up tmp files...', end="")
+    
+    shutil.rmtree(kerneldir)
+    
+    print(' Done!')
+    print('For uninstall use: jupyter kernelspec uninstall jupyterdartkernel')
+    
