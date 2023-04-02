@@ -3,14 +3,12 @@
 import subprocess, os, shutil, tempfile, re
 from ipykernel.kernelbase import Kernel
 
-
-class DartKernel(Kernel):
-    # Jupiter stuff
+class dartkernel(Kernel):
     implementation = 'Dart'
     implementation_version = '1.0.0'
     language = 'dart'
     language_version = '2.18.5'
-    language_info = {'mimetype': 'text/plain', 'file_extension': 'dart', 'name': 'dart'}
+    language_info = {'mimetype': 'application/dart', 'file_extension': 'dart', 'name': 'dart'}
     banner = "Dart kernel"
     
     output = ""
@@ -122,8 +120,3 @@ class DartKernel(Kernel):
         else:
             os.remove(dartFileLocation)
             return 1, error_output
-
-
-if __name__ == '__main__':
-    from ipykernel.kernelapp import IPKernelApp
-    IPKernelApp.launch_instance(kernel_class=DartKernel)
