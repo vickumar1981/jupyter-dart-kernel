@@ -21,7 +21,7 @@ A simple kernel that adds the  [Dart programming language](https://Dart.org) int
 3. Download the kernel and save it somewhere memorable.
 4. Open shell in project folder
 5. `pip install -e ./`
-6. `jupyter kernelspec install --user jupyterdartkernel`
+6. `jupyterdartkernel` or `jupyter kernelspec install --user jupyterdartkernel`
   - To use the kernel in the Jupyter console: `jupyter console --kernel jupyterdartkernel`
   - to use the kernel in a notebook: `jupyter notebook` and create a new notebook through the browser
   
