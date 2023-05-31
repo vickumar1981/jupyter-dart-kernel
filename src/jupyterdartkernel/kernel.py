@@ -74,7 +74,7 @@ class dartkernel(Kernel):
             curr_line = lines_read[idx]
             if curr_line.startswith("import "):
                 import_lines.append(curr_line)
-            elif curr_line.startswith("class "):
+            elif curr_line.startswith("class ") or curr_line.startswith("abstract "):
                 class_lines.append(curr_line)
                 open_brackets = 0
                 open_brackets += curr_line.count("{")
