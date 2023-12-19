@@ -10,23 +10,7 @@ class dartkernel(Kernel):
     language_version = '2.18.5'
     language_info = {'mimetype': 'application/dart', 'file_extension': 'dart', 'name': 'dart'}
     banner = "Dart kernel"
-
-    # pubspec.yaml template
-    pubspec = ("name: dart_kernel_app\n"
-               "description: A dart kernel depenency controller.\n"
-               "publish_to: 'none'\n"
-               "\n"
-               "version: 1.0.0+1\n"
-               "\n"
-               "environment:\n"
-               "  sdk: '>=3.1.5 <4.0.0'\n"
-               ""
-               "dependencies:\n"
-               "  flutter:\n"
-               "    sdk: flutter\n"
-               "\n"
-               "%s")
-
+    
     output = ""
     dartDirectory = tempfile.mkdtemp()
     
@@ -72,8 +56,7 @@ class dartkernel(Kernel):
         dartFileLocation = os.path.join(self.dartDirectory, 'scratch.dart')
         canonicalFile = os.path.join(self.dartDirectory, 'canonical.dart')
         runFile = os.path.join(self.dartDirectory, 'main.dart')
-        specFile = os.path.join(self.dartDirectory, 'pubspec.yaml')
-    
+        
         if os.path.isfile(canonicalFile):
             shutil.copyfile(canonicalFile, dartFileLocation)
         
@@ -113,23 +96,10 @@ class dartkernel(Kernel):
         wf.write("\n")
         wf.writelines(code_lines)
         wf.close()
-        
-        if import_lines:
-            # write the pubspec.yaml file to the template direcotory
-            with open(specFile, "w") as f:
-                # extract package name and version from comment in the end of the import line
-                # example of the comment:
-                # `xml: ^6.3.0`
-                # `intl: "^0.18.1"`
-                imp = re.findall("^\s*import[^;]+;\s*\/\/\s*(\w+):(.*)", "\n".join(import_lines), re.MULTILINE)
-                spec = "\n".join( "  %s: %s" % (x[0].strip(), x[1].strip()) for x in imp )
-                f.write(self.pubspec % spec)
-        
-        error_output = []
-        os.chdir(self.dartDirectory)
 
-        # run resolve dependencies before run 
-        cmd = 'dart pub get; dart {0}'.format(runFile)
+        error_output = []
+        
+        cmd = 'dart {0}'.format(runFile)
         dart = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         new_output = dart.stdout.read()
 
